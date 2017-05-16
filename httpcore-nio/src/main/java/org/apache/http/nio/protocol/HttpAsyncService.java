@@ -105,7 +105,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
     static final String HTTP_EXCHANGE_STATE = "http.nio.http-exchange-state";
 
     private final HttpProcessor httpProcessor;
-    private final ConnectionReuseStrategy connStrategy;
+    private final ConnectionReuseStrategy connectionReuseStrategy;
     private final HttpResponseFactory responseFactory;
     private final HttpAsyncRequestHandlerMapper handlerMapper;
     private final HttpAsyncExpectationVerifier expectationVerifier;
@@ -213,7 +213,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
             final ExceptionLogger exceptionLogger) {
         super();
         this.httpProcessor = Args.notNull(httpProcessor, "HTTP processor");
-        this.connStrategy = connStrategy != null ? connStrategy :
+        this.connectionReuseStrategy = connStrategy != null ? connStrategy :
                 DefaultConnectionReuseStrategy.INSTANCE;
         this.responseFactory = responseFactory != null ? responseFactory :
                 DefaultHttpResponseFactory.INSTANCE;
@@ -743,7 +743,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
         } finally {
             responseProducer.close();
         }
-        if (!this.connStrategy.keepAlive(response, context)) {
+        if (!this.connectionReuseStrategy.keepAlive(response, context)) {
             conn.close();
         } else {
             conn.requestInput();
@@ -1073,6 +1073,30 @@ public class HttpAsyncService implements NHttpServerEventHandler {
             return resolver.lookup(request.getRequestLine().getUri());
         }
 
+    }
+
+    protected HttpResponseFactory getResponseFactory() {
+        return responseFactory;
+    }
+
+    protected HttpProcessor getHttpProcessor() {
+        return httpProcessor;
+    }
+
+    protected ConnectionReuseStrategy getConnectionReuseStrategy() {
+        return connectionReuseStrategy;
+    }
+
+    protected HttpAsyncRequestHandlerMapper getHandlerMapper() {
+        return handlerMapper;
+    }
+
+    protected HttpAsyncExpectationVerifier getExpectationVerifier() {
+        return expectationVerifier;
+    }
+
+    protected ExceptionLogger getExceptionLogger() {
+        return exceptionLogger;
     }
 
 }
