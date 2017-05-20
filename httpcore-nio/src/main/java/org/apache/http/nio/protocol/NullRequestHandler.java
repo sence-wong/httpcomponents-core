@@ -36,6 +36,15 @@ import org.apache.http.protocol.HttpContext;
 
 class NullRequestHandler implements HttpAsyncRequestHandler<Object> {
 
+    private static final NullRequestHandler INSTANCE = new NullRequestHandler();
+    
+    /**
+     * @since 4.4.7
+     */
+    public static NullRequestHandler getInstance() {
+        return INSTANCE;
+    }
+    
     public NullRequestHandler() {
         super();
     }
